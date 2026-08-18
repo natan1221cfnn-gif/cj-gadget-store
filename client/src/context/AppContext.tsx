@@ -91,15 +91,32 @@ export const API_BASE_URL = import.meta.env.VITE_API_URL
   ? import.meta.env.VITE_API_URL
   : 'https://cj-gadget-store.onrender.com/api';
 
+import defaultProductsRaw from '../data/defaultProducts.json';
+
+const defaultProducts = defaultProductsRaw as Product[];
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>([]);
+  // Initialize with cached products or full default catalog so store is never empty
+  const [products, setProducts] = useState<Product[]>(() => {
+    try {
+      const cached = localStorage.getItem('tz_cached_products');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Could not read cached products', e);
+    }
+    return defaultProducts;
+  });
+
   const [orders, setOrders] = useState<Order[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [apiSettings, setApiSettings] = useState<ApiSettings>({ apiKey: '', isConnected: false });
   const [activePage, setPageInternal] = useState<'store' | 'admin' | 'orders' | 'track' | 'support'>('store');
   const [adminSubTab, setAdminSubTab] = useState<'settings' | 'products'>('settings');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncLogs, setSyncLogs] = useState<string[]>([]);
 
@@ -113,9 +130,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Fetch initial data
   useEffect(() => {
     const init = async () => {
-      setLoading(true);
-      await Promise.all([fetchProducts(), fetchSettings(), fetchOrders()]);
-      setLoading(false);
+      await Promise.allSettled([fetchProducts(), fetchSettings(), fetchOrders()]);
     };
     init();
     
@@ -135,15 +150,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem('tz_cart', JSON.stringify(cart));
   }, [cart]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (retryCount = 0) => {
     try {
       const res = await fetch(`${API_BASE_URL}/products`);
       if (res.ok) {
         const data = await res.json();
-        setProducts(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setProducts(data);
+          try {
+            localStorage.setItem('tz_cached_products', JSON.stringify(data));
+          } catch (e) {
+            // ignore localStorage quota
+          }
+          return;
+        }
       }
     } catch (err) {
-      console.error('Error fetching products:', err);
+      console.warn(`Fetch products attempt ${retryCount + 1} failed:`, err);
+    }
+
+    // If server is cold-starting on Render, retry after short interval
+    if (retryCount < 3) {
+      setTimeout(() => {
+        fetchProducts(retryCount + 1);
+      }, 3000);
     }
   };
 
