@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { ShoppingBag, Settings, Package, Trash2, X, Plus, Minus, CreditCard, Heart, User, Search } from 'lucide-react';
+import { ShoppingBag, Settings, Package, Trash2, X, Plus, Minus, CreditCard, Heart, User, Search, Menu, HelpCircle, Truck, Layers } from 'lucide-react';
 
 interface NavbarProps {
   onOpenCheckout: () => void;
@@ -9,11 +9,19 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ onOpenCheckout }) => {
   const { cart, activePage, setPage, removeFromCart, updateCartQuantity, apiSettings, formatPrice, setAdminSubTab } = useApp();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cart.reduce((sum, item) => sum + (item.variant.price * item.quantity), 0);
 
   const toggleCart = () => setIsCartOpen(!isCartOpen);
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+
+  const handleMobileNav = (page: 'store' | 'admin' | 'orders' | 'track' | 'support', subTab?: 'settings' | 'products') => {
+    if (subTab) setAdminSubTab(subTab);
+    setPage(page);
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -24,7 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCheckout }) => {
         backgroundColor: 'rgba(255, 255, 255, 0.85)',
         backdropFilter: 'blur(12px)',
         borderBottom: '1px solid var(--border)',
-        height: '80px',
+        height: '74px',
         display: 'flex',
         alignItems: 'center',
         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.02)'
@@ -35,31 +43,43 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCheckout }) => {
           alignItems: 'center',
           width: '100%'
         }}>
-          {/* Right side: Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setPage('store')}>
-            <div style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '10px',
-              backgroundColor: 'var(--primary)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: '800',
-              fontSize: '1.3rem',
-              color: '#FFFFFF',
-              boxShadow: '0 4px 12px rgba(var(--primary-rgb), 0.15)'
-            }}>
-              TZ
-            </div>
-            <div>
-              <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text)', margin: 0, lineHeight: 1.1, letterSpacing: '-0.02em' }}>טק-זון</h1>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 500 }}>חנות גאדג'טים חכמה</span>
+          {/* Right side: Logo & Mobile Hamburger */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {/* Mobile Hamburger Button */}
+            <button 
+              className="nav-mobile-btn" 
+              onClick={toggleMobileMenu}
+              aria-label="פתח תפריט"
+            >
+              <Menu size={22} />
+            </button>
+
+            {/* Logo */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => setPage('store')}>
+              <div style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '10px',
+                backgroundColor: 'var(--primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: '800',
+                fontSize: '1.2rem',
+                color: '#FFFFFF',
+                boxShadow: '0 4px 12px rgba(var(--primary-rgb), 0.15)'
+              }}>
+                TZ
+              </div>
+              <div>
+                <h1 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text)', margin: 0, lineHeight: 1.1, letterSpacing: '-0.02em' }}>טק-זון</h1>
+                <span className="hide-on-mobile" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>חנות גאדג'טים חכמה</span>
+              </div>
             </div>
           </div>
 
-          {/* Middle: Navigation Links (Text style from mockup) */}
-          <nav style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
+          {/* Middle: Desktop Navigation Links */}
+          <nav className="nav-desktop">
             <button 
               onClick={() => setPage('store')}
               style={{
@@ -153,7 +173,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCheckout }) => {
           </nav>
 
           {/* Left side: Action Icons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {/* Search Icon */}
             <button 
               onClick={() => {
@@ -171,6 +191,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCheckout }) => {
 
             {/* Wishlist Icon */}
             <button 
+              className="hide-on-mobile"
               onClick={() => alert('רשימת משאלות (סימולציה)')}
               style={{ background: 'none', border: 'none', color: 'var(--text)', cursor: 'pointer', padding: '6px', display: 'flex', alignItems: 'center' }}
               title="רשימת משאלות"
@@ -180,6 +201,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCheckout }) => {
 
             {/* Profile/Admin Icon */}
             <button 
+              className="hide-on-mobile"
               onClick={() => setPage('admin')}
               style={{ background: 'none', border: 'none', color: 'var(--text)', cursor: 'pointer', padding: '6px', display: 'flex', alignItems: 'center' }}
               title="חשבון אדמין"
@@ -187,8 +209,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCheckout }) => {
               <User size={20} style={{ strokeWidth: 1.8 }} />
             </button>
 
-            {/* Separator */}
-            <span style={{ width: '1px', height: '24px', backgroundColor: 'var(--border)' }}></span>
+            {/* Separator (Desktop) */}
+            <span className="hide-on-mobile" style={{ width: '1px', height: '24px', backgroundColor: 'var(--border)' }}></span>
 
             {/* Cart Icon Button */}
             <button 
@@ -196,14 +218,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCheckout }) => {
               onClick={toggleCart} 
               style={{ 
                 position: 'relative', 
-                width: '44px', 
-                height: '44px', 
+                width: '40px', 
+                height: '40px', 
                 padding: 0,
                 borderRadius: '10px',
                 border: '1px solid var(--border)'
               }}
             >
-              <ShoppingBag size={20} style={{ strokeWidth: 1.8 }} />
+              <ShoppingBag size={19} style={{ strokeWidth: 1.8 }} />
               {cartItemsCount > 0 && (
                 <span style={{
                   position: 'absolute',
@@ -227,6 +249,201 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCheckout }) => {
           </div>
         </div>
       </header>
+
+      {/* Mobile Drawer Overlay */}
+      {isMobileMenuOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          left: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.4)',
+          backdropFilter: 'blur(4px)',
+          zIndex: 100,
+          display: 'flex',
+          justifyContent: 'flex-start'
+        }} onClick={() => setIsMobileMenuOpen(false)}>
+          <div 
+            className="animate-slide-in"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '82%',
+              maxWidth: '320px',
+              height: '100%',
+              backgroundColor: '#FFFFFF',
+              boxShadow: '-4px 0 24px rgba(0, 0, 0, 0.15)',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '24px 20px',
+              direction: 'rtl',
+              overflowY: 'auto'
+            }}
+          >
+            {/* Mobile Drawer Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', borderBottom: '1px solid var(--border)', paddingBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '8px',
+                  backgroundColor: 'var(--primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '800',
+                  color: '#FFFFFF'
+                }}>
+                  TZ
+                </div>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '1.15rem' }}>טק-זון</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>תפריט ראשי</div>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', color: 'var(--text-muted)' }}
+              >
+                <X size={22} />
+              </button>
+            </div>
+
+            {/* Mobile Drawer Links */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+              <button 
+                onClick={() => handleMobileNav('store')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  width: '100%',
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  backgroundColor: activePage === 'store' ? 'var(--badge-bg)' : 'transparent',
+                  color: activePage === 'store' ? 'var(--primary)' : 'var(--text)',
+                  fontWeight: activePage === 'store' ? 700 : 600,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'right'
+                }}
+              >
+                <Layers size={18} />
+                כל הגאדג'טים
+              </button>
+
+              <button 
+                onClick={() => handleMobileNav('track')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  width: '100%',
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  backgroundColor: activePage === 'track' ? 'var(--badge-bg)' : 'transparent',
+                  color: activePage === 'track' ? 'var(--primary)' : 'var(--text)',
+                  fontWeight: activePage === 'track' ? 700 : 600,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'right'
+                }}
+              >
+                <Truck size={18} />
+                מעקב משלוחים
+              </button>
+
+              <button 
+                onClick={() => handleMobileNav('support')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  width: '100%',
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  backgroundColor: activePage === 'support' ? 'var(--badge-bg)' : 'transparent',
+                  color: activePage === 'support' ? 'var(--primary)' : 'var(--text)',
+                  fontWeight: activePage === 'support' ? 700 : 600,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'right'
+                }}
+              >
+                <HelpCircle size={18} />
+                תמיכה וצור קשר
+              </button>
+
+              <button 
+                onClick={() => handleMobileNav('orders')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  width: '100%',
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  backgroundColor: activePage === 'orders' ? 'var(--badge-bg)' : 'transparent',
+                  color: activePage === 'orders' ? 'var(--primary)' : 'var(--text)',
+                  fontWeight: activePage === 'orders' ? 700 : 600,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'right'
+                }}
+              >
+                <Package size={18} />
+                הזמנות מערכת
+              </button>
+
+              <button 
+                onClick={() => handleMobileNav('admin', 'settings')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  backgroundColor: activePage === 'admin' ? 'var(--badge-bg)' : 'transparent',
+                  color: activePage === 'admin' ? 'var(--primary)' : 'var(--text)',
+                  fontWeight: activePage === 'admin' ? 700 : 600,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'right'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <Settings size={18} />
+                  הגדרות API וניהול
+                </div>
+                <span style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: apiSettings.isConnected ? 'var(--success)' : '#FFA500'
+                }} />
+              </button>
+            </div>
+
+            {/* Mobile Drawer Footer */}
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <button 
+                className="btn btn-primary" 
+                onClick={() => { setIsMobileMenuOpen(false); toggleCart(); }}
+                style={{ width: '100%', padding: '12px' }}
+              >
+                <ShoppingBag size={18} />
+                עגלת קניות ({cartItemsCount})
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Cart Sidebar (Drawer) */}
       {isCartOpen && (

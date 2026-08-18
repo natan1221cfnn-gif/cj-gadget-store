@@ -93,30 +93,30 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
       {/* Content */}
       <div style={{
-        padding: '16px',
+        padding: '12px',
         display: 'flex',
         flexDirection: 'column',
         flex: 1
       }}>
         {/* Rating */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '8px' }}>
-          <Star size={14} fill="#C5A880" color="#C5A880" />
-          <span style={{ fontSize: '0.8rem', fontWeight: 700 }}>{product.rating.toFixed(1)}</span>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>({product.reviewsCount} חוות דעת)</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '6px' }}>
+          <Star size={13} fill="#C5A880" color="#C5A880" />
+          <span style={{ fontSize: '0.78rem', fontWeight: 700 }}>{product.rating.toFixed(1)}</span>
+          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>({product.reviewsCount})</span>
         </div>
 
         {/* Title */}
         <h3 style={{
-          fontSize: '0.95rem',
+          fontSize: '0.9rem',
           fontWeight: 600,
-          lineHeight: 1.4,
-          marginBottom: '12px',
+          lineHeight: 1.35,
+          marginBottom: '8px',
           color: 'var(--text)',
           display: '-webkit-box',
           WebkitLineClamp: 2,
           WebkitBoxOrient: 'vertical',
           overflow: 'hidden',
-          height: '2.8rem' // Fix height to align grids
+          height: '2.5rem'
         }}>
           {product.productName}
         </h3>
@@ -127,39 +127,40 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           justifyContent: 'space-between',
           alignItems: 'baseline',
           marginTop: 'auto',
-          paddingTop: '8px',
+          paddingTop: '6px',
           borderTop: '1px solid var(--border)',
-          marginBottom: '12px'
+          marginBottom: '10px'
         }}>
-          <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary)' }}>
+          <span style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary)' }}>
             {formatPrice(product.sellPrice)}
           </span>
           {product.originalPrice > 0 && (
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>
+            <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>
               {formatPrice(product.sellPrice * 1.3)}
             </span>
           )}
         </div>
 
-        {/* Action Buttons side-by-side matching mockup */}
-        <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', gap: '6px', width: '100%' }}>
           <button 
             className="btn btn-primary" 
             onClick={handleAddToCart}
             style={{ 
               flex: 1.2, 
-              padding: '8px 10px', 
-              fontSize: '0.8rem', 
-              borderRadius: '8px',
+              padding: '7px 6px', 
+              fontSize: '0.78rem', 
+              borderRadius: '7px',
               fontWeight: 700,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '6px'
+              gap: '4px',
+              whiteSpace: 'nowrap'
             }}
           >
-            <ShoppingCart size={14} />
-            הוסף לסל
+            <ShoppingCart size={13} />
+            הוסף
           </button>
           <button 
             className="btn btn-secondary" 
@@ -169,18 +170,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             }}
             style={{ 
               flex: 1, 
-              padding: '8px 10px', 
-              fontSize: '0.8rem', 
-              borderRadius: '8px',
+              padding: '7px 6px', 
+              fontSize: '0.78rem', 
+              borderRadius: '7px',
               fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '6px'
+              gap: '4px',
+              whiteSpace: 'nowrap'
             }}
           >
-            <Eye size={14} />
-            לפרטים נוספים
+            <Eye size={13} />
+            פרטים
           </button>
         </div>
       </div>

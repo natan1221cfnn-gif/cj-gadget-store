@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useApp } from '../context/AppContext';
+import { useApp, API_BASE_URL } from '../context/AppContext';
 import type { Product, Variant } from '../context/AppContext';
 import { Star, ShoppingCart, Plus, Minus, ArrowRight, ShieldCheck, Truck, RefreshCw, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 
@@ -48,7 +48,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }
     const fetchShipping = async () => {
       setLoadingShipping(true);
       try {
-        const res = await fetch('http://localhost:5000/api/shipping-rates', {
+        const res = await fetch(`${API_BASE_URL}/shipping-rates`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

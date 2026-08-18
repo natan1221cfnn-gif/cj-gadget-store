@@ -86,14 +86,10 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-// In production fullstack (Render): same origin so use relative /api
-// In dev: use localhost:5000
-// In Harvis-only deploy with external backend: use VITE_API_URL env var
-const API_BASE_URL = import.meta.env.VITE_API_URL
+// Production backend on Render - serves all users worldwide
+export const API_BASE_URL = import.meta.env.VITE_API_URL
   ? import.meta.env.VITE_API_URL
-  : import.meta.env.PROD
-    ? '/api'
-    : 'http://localhost:5000/api';
+  : 'https://cj-gadget-store.onrender.com/api';
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [products, setProducts] = useState<Product[]>([]);
